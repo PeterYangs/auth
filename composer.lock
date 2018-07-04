@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/framework.git",
-                "reference": "989490477f5ebf693e66aae774fa1e655b99d4d4"
+                "reference": "886e137dcb2409a52f1f8f07a146ea8fbd17181b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://files.phpcomposer.com/files/top-think/framework/989490477f5ebf693e66aae774fa1e655b99d4d4.zip",
-                "reference": "989490477f5ebf693e66aae774fa1e655b99d4d4",
+                "url": "https://files.phpcomposer.com/files/top-think/framework/886e137dcb2409a52f1f8f07a146ea8fbd17181b.zip",
+                "reference": "886e137dcb2409a52f1f8f07a146ea8fbd17181b",
                 "shasum": ""
             },
             "require": {
@@ -55,7 +55,7 @@
                 "orm",
                 "thinkphp"
             ],
-            "time": "2018-07-04T05:37:33+00:00"
+            "time": "2018-07-04T06:40:40+00:00"
         },
         {
             "name": "topthink/think-installer",

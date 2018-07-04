@@ -6,4 +6,5 @@
 .*
 !.gitignore
 vendor
+composer.lock
 
