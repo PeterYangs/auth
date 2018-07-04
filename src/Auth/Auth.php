@@ -167,11 +167,11 @@ class Auth
         if ($data['id']) {
 
 
-            $re = Db::table('son_auth_rule')->update($data);
+            $re = Db::table($this->auth_rule)->update($data);
 
         } else {
 
-            $re = Db::table('son_auth_rule')->insert($data);
+            $re = Db::table($this->auth_rule)->insert($data);
         }
 
     }
