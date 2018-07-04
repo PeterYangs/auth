@@ -9,6 +9,7 @@
 namespace Auth\Start;
 
 use think\Db;
+use think\Exception;
 
 class Auth
 {
@@ -156,17 +157,29 @@ class Auth
 
     }
 
+    /**
+     * 添加修改权限码
+     * Create by Peter
+     * @param $data
+     * @throws Exception
+     * @throws \think\exception\PDOException
+     */
+    function auth_update($data){
 
-    function test()
-    {
+
+        if($data['id']){
 
 
-//
-//        $re=Db::table('test')->select();
-//
-//        Db::connect();
-//
-//        print_r($re);
+            $re=Db::table('son_auth_rule')->update($data);
+
+        }else{
+
+            $re=Db::table('son_auth_rule')->insert($data);
+        }
+
     }
+
+
+
 
 }
