@@ -16,7 +16,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Auth\\Start\\": "src/Auth"
+            "Src\\Auth\\": "src/Auth"
         }
     }
 }

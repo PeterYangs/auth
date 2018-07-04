@@ -6,7 +6,7 @@
  * Time: 09:18
  */
 
-namespace Auth\Start;
+namespace Src\Auth;
 
 use think\Db;
 use think\Exception;
