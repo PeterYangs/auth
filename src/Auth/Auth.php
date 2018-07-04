@@ -169,4 +169,68 @@ class Auth
 //        print_r($re);
     }
 
+    /**
+     * 添加/编辑用户信息
+     * @param array $data
+     * @return bool 成功返回自增id，失败返回false
+     */
+    function save_user($data){
+        if (empty($data) || !is_array($data)){
+            return false;
+        }
+        if (isset($data['password'])){
+            $data['password'] = password_hash( $data['password'], PASSWORD_DEFAULT);
+        }
+        if (isset($data['id'])){
+            //更新
+            try{
+                Db::table($this->user)->update($data);
+                return true;
+            }catch(\Exception $e){
+                return false;
+            }
+        } else {
+            //添加
+            try{
+                Db::table($this->user)->insert($data);
+            }catch (\Exception $e){
+                return false;
+            }
+        }
+        return Db::name($this->user)->getLastInsID();
+    }
+
+    /**
+     * 删除用户信息
+     * @param int $id 用户表主键id
+     * @return int
+     * @throws \think\Exception
+     * @throws \think\exception\PDOException
+     */
+    function del_user($id){
+        if (empty($id)){
+            return false;
+        }
+        return Db::table($this->user)->delete($id);
+    }
+
+    /**
+     * 检查用户登录
+     * @param string $username 用户名
+     * @param string $password 密码
+     * @return array|bool|false|\PDOStatement|string|\think\Model
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    function check_login($username,$password){
+        $data = Db::table($this->user)->where('username',$username)->find();
+        if (empty($data)){
+            return false;
+        }
+        if (password_verify($password,$data['password'])){
+            return $data;
+        }
+        return false;
+    }
 }
