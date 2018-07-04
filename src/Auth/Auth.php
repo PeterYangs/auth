@@ -6,9 +6,10 @@
  * Time: 09:18
  */
 
-namespace Auth\Start;
+namespace Src\Auth;
 
 use think\Db;
+use think\Exception;
 
 class Auth
 {
@@ -26,13 +27,13 @@ class Auth
     function __construct($auth_group = 'auth_group', $group_access = 'auth_group_access', $auth_rule = 'auth_rule', $user = 'user')
     {
 
-        $this->auth_group=$auth_group;
+        $this->auth_group = $auth_group;
 
-        $this->group_access=$group_access;
+        $this->group_access = $group_access;
 
-        $this->auth_rule=$auth_rule;
+        $this->auth_rule = $auth_rule;
 
-        $this->user=$user;
+        $this->user = $user;
 
     }
 
@@ -46,24 +47,23 @@ class Auth
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    function check($rule,$uid){
+    function check($rule, $uid)
+    {
 
 
         //转小写
-        $rule=strtolower($rule);
+        $rule = strtolower($rule);
 
-        $list= $this->getRuleList($uid);
+        $list = $this->getRuleList($uid);
 
 
+        if ($list === true) return true;
 
-        if($list===true)  return true;
+        if (!$list) return [];
 
-        if(!$list) return [];
-
-        if(in_array($rule,$list)) return $list;
+        if (in_array($rule, $list)) return $list;
 
         return false;
-
 
 
     }
@@ -78,41 +78,39 @@ class Auth
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    protected function getRuleList($uid){
+    protected function getRuleList($uid)
+    {
 
 
-        $re=Db::table($this->group_access)
+        $re = Db::table($this->group_access)
             ->alias('ga')
-            ->join($this->auth_group." ag",'ga.group_id = ag.id','left')
-            ->where('ga.uid',$uid)
+            ->join($this->auth_group . " ag", 'ga.group_id = ag.id', 'left')
+            ->where('ga.uid', $uid)
             ->find();
 
 
-
-        if(!$re) return [];
+        if (!$re) return [];
 
 
         //超级管理员
-        if($re['group_id']===0) return true;
+        if ($re['group_id'] === 0) return true;
 
 
-
-        $res=Db::table($this->auth_rule)->where('id','in',$re['rules'])->select();
-
-
-        if(!$res) return [];
+        $res = Db::table($this->auth_rule)->where('id', 'in', $re['rules'])->select();
 
 
+        if (!$res) return [];
 
-        $res=array_column($res,'name');
 
-        $arr=[];
+        $res = array_column($res, 'name');
+
+        $arr = [];
         //全部转小写
-        foreach ($res as $key=>$value){
+        foreach ($res as $key => $value) {
 
-            $v=strtolower($value);
+            $v = strtolower($value);
 
-            $arr[]=$v;
+            $arr[] = $v;
         }
 
 
@@ -129,17 +127,18 @@ class Auth
      * @param $auth array 拥有的列表，授权类返回的数组
      * @return array
      */
-    function filter_menu($menu,$auth=[]){
+    function filter_menu($menu, $auth = [])
+    {
 
-        $new_menu=array();
-        foreach ($menu as $key=>$value){
+        $new_menu = array();
+        foreach ($menu as $key => $value) {
 
 
-            foreach ($value as $key1=>$value1){
+            foreach ($value as $key1 => $value1) {
 
-                if(in_array(($value1),$auth)){
+                if (in_array(($value1), $auth)) {
 
-                    $new_menu[$key][$key1]=$value1;
+                    $new_menu[$key][$key1] = $value1;
                 }
 
 
@@ -149,51 +148,61 @@ class Auth
         }
 
 
-
         return $new_menu;
 
 
-
     }
 
-
-    function test()
+    /**
+     * 添加修改权限码
+     * Create by Peter
+     * @param $data
+     * @throws Exception
+     * @throws \think\exception\PDOException
+     */
+    function auth_update($data)
     {
 
 
-//
-//        $re=Db::table('test')->select();
-//
-//        Db::connect();
-//
-//        print_r($re);
+        if ($data['id']) {
+
+
+            $re = Db::table('son_auth_rule')->update($data);
+
+        } else {
+
+            $re = Db::table('son_auth_rule')->insert($data);
+        }
+
     }
+
 
     /**
      * 添加/编辑用户信息
      * @param array $data
      * @return bool 成功返回自增id，失败返回false
      */
-    function save_user($data){
-        if (empty($data) || !is_array($data)){
+    function save_user($data)
+    {
+        if (empty($data) || !is_array($data)) {
             return false;
         }
-        if (isset($data['password'])){
-            $data['password'] = password_hash( $data['password'], PASSWORD_DEFAULT);
+        if (isset($data['password'])) {
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
         }
-        if (isset($data['id'])){
+        if (isset($data['id'])) {
             //更新
-            try{
+            try {
                 Db::table($this->user)->update($data);
                 return true;
-            }catch(\Exception $e){
+            } catch (\Exception $e) {
                 return false;
             }
         } else {
             //添加
-            try{
+            try {
                 Db::table($this->user)->insert($data);
-            }catch (\Exception $e){
+            } catch (\Exception $e) {
                 return false;
             }
         }
@@ -207,8 +216,9 @@ class Auth
      * @throws \think\Exception
      * @throws \think\exception\PDOException
      */
-    function del_user($id){
-        if (empty($id)){
+    function del_user($id)
+    {
+        if (empty($id)) {
             return false;
         }
         return Db::table($this->user)->delete($id);
@@ -223,12 +233,13 @@ class Auth
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    function check_login($username,$password){
-        $data = Db::table($this->user)->where('username',$username)->find();
-        if (empty($data)){
+    function check_login($username, $password)
+    {
+        $data = Db::table($this->user)->where('username', $username)->find();
+        if (empty($data)) {
             return false;
         }
-        if (password_verify($password,$data['password'])){
+        if (password_verify($password, $data['password'])) {
             return $data;
         }
         return false;

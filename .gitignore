@@ -5,6 +5,5 @@
 # IntelliJ project files
 .*
 !.gitignore
-vendor
-src/Test
+composer.lock
 
