@@ -61,11 +61,27 @@ class Auth
 
         if (!$list) return [];
 
-        if (in_array($rule, $list)) return $list;
+        if (in_array($rule, $this->all_lowed($list))) return $list;
 
         return false;
 
 
+    }
+
+
+    function all_lowed(array $array){
+
+        $new_arr=[];
+
+
+        foreach ($array as $key=>$value){
+
+            $new_arr[]=(strtolower($value));
+
+        }
+
+
+        return $new_arr;
     }
 
 
@@ -104,17 +120,17 @@ class Auth
 
         $res = array_column($res, 'name');
 
-        $arr = [];
-        //全部转小写
-        foreach ($res as $key => $value) {
+//        $arr = [];
+//        //全部转小写
+//        foreach ($res as $key => $value) {
+//
+//            $v = strtolower($value);
+//
+//            $arr[] = $v;
+//        }
 
-            $v = strtolower($value);
 
-            $arr[] = $v;
-        }
-
-
-        return $arr;
+        return $res;
 
 
     }
